@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Traffic & LTV Report 2024–2025</title>
+<title>🎅 Traffic & LTV Report 2024–2025</title>
 <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 <style>
   :root {
@@ -13,13 +13,13 @@
     --text:#e7eaf0;
     --line:#242b3a;
   }
-  body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial; background:var(--bg); color:var(--text); }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; background:var(--bg); color:var(--text); }
   .wrap { max-width: 1200px; margin: 0 auto; padding: 24px 18px 56px; }
   h1 { margin: 6px 0 6px; font-size: 26px; }
   .sub { color:var(--muted); margin-bottom: 18px; }
   .cards {
     display:grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
     margin: 14px 0 26px;
   }
@@ -50,7 +50,22 @@
   }
   .block h2 { font-size: 16px; margin: 10px 10px 0; }
   .plot { height: 420px; }
-  .plot.small { height: 380px; }
+  .plot.small { height: 360px; }
+
+  /* 🎄 Light New Year mood */
+  .snowflake {
+    position: fixed;
+    top: -10px;
+    color: #fff;
+    font-size: 14px;
+    opacity: 0.55;
+    pointer-events: none;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh); }
+  }
+
   @media (max-width: 1100px) {
     .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
@@ -58,27 +73,12 @@
     .cards { grid-template-columns: 1fr; }
     .plot, .plot.small { height: 360px; }
   }
-
-/* 🎄 Light New Year mood */
-.snowflake {
-  position: fixed;
-  top: -10px;
-  color: #fff;
-  font-size: 14px;
-  opacity: 0.6;
-  pointer-events: none;
-  animation: fall linear infinite;
-}
-@keyframes fall {
-  to { transform: translateY(110vh); }
-}
-
 </style>
 </head>
 <body>
   <div class="wrap">
     <h1>🎅 Traffic & LTV comparison (2024 → 2025)</h1>
-    <div class="sub">Main traffic + repeat sales. Delta is shown as % change versus 2024.</div>
+    <div class="sub">All blocks in one place: traffic, approve, economy, and repeat sales (LTV). Light winter mood ❄️</div>
 
     <div class="cards" id="kpiCards"></div>
 
@@ -91,6 +91,11 @@
       <div class="block">
         <h2>Confirmed by country</h2>
         <div id="countries" class="plot"></div>
+      </div>
+
+      <div class="block">
+        <h2>Approve rate by country (orders / approved orders)</h2>
+        <div id="approve" class="plot"></div>
       </div>
 
       <div class="block">
@@ -119,6 +124,11 @@
       </div>
 
       <div class="block">
+        <h2>Repeat sales: average check (EUR)</h2>
+        <div id="repeatAvg" class="plot"></div>
+      </div>
+
+      <div class="block">
         <h2>LTV block: repeat share of main traffic (repeat confirmed / main confirmed)</h2>
         <div id="repeatShare" class="plot"></div>
       </div>
@@ -126,8 +136,8 @@
   </div>
 
 <script>
-const rows = [{"country": "IT", "confirmed_2024": 70423.0, "confirmed_2025": 80815.0, "avg_check_2024": 128.0, "avg_check_2025": 134.0, "cpa_2024": 32.8, "cpa_2025": 38.7, "paid_2024": 0.8302, "paid_2025": 0.8141, "rent_2024": 22.9, "rent_2025": 13.7, "repeat_confirmed_2024": 10444.0, "repeat_confirmed_2025": 6783.0, "repeat_avg_2024": 148.0, "repeat_avg_2025": 157.0, "repeat_share_2024": 0.1483038211947801, "repeat_share_2025": 0.08393243828497185}, {"country": "FR", "confirmed_2024": 8035.0, "confirmed_2025": 51075.0, "avg_check_2024": 126.0, "avg_check_2025": 146.0, "cpa_2024": 28.9, "cpa_2025": 32.8, "paid_2024": 0.6347, "paid_2025": 0.649, "rent_2024": 0.6, "rent_2025": 6.1, "repeat_confirmed_2024": 403.0, "repeat_confirmed_2025": 3978.0, "repeat_avg_2024": 131.0, "repeat_avg_2025": 146.0, "repeat_share_2024": 0.05015556938394524, "repeat_share_2025": 0.07788546255506608}, {"country": "DE", "confirmed_2024": 24323.0, "confirmed_2025": 43732.0, "avg_check_2024": 131.0, "avg_check_2025": 142.0, "cpa_2024": 38.7, "cpa_2025": 43.9, "paid_2024": 0.8011, "paid_2025": 0.794, "rent_2024": 14.9, "rent_2025": 16.8, "repeat_confirmed_2024": 1862.0, "repeat_confirmed_2025": 2024.0, "repeat_avg_2024": 151.0, "repeat_avg_2025": 163.0, "repeat_share_2024": 0.07655305677753567, "repeat_share_2025": 0.04628189883837922}, {"country": "ES", "confirmed_2024": 24689.0, "confirmed_2025": 16324.0, "avg_check_2024": 125.0, "avg_check_2025": 134.0, "cpa_2024": 37.5, "cpa_2025": 26.4, "paid_2024": 0.7712, "paid_2025": 0.772, "rent_2024": 10.5, "rent_2025": 21.2, "repeat_confirmed_2024": 3251.0, "repeat_confirmed_2025": 1669.0, "repeat_avg_2024": 125.0, "repeat_avg_2025": 140.0, "repeat_share_2024": 0.13167807525618697, "repeat_share_2025": 0.1022420975251164}, {"country": "SE", "confirmed_2024": 778.0, "confirmed_2025": 14230.0, "avg_check_2024": 119.0, "avg_check_2025": 135.0, "cpa_2024": 10.8, "cpa_2025": 35.4, "paid_2024": 0.7622, "paid_2025": 0.8120999999999999, "rent_2024": 37.4, "rent_2025": 19.7, "repeat_confirmed_2024": 17.0, "repeat_confirmed_2025": 409.0, "repeat_avg_2024": 119.0, "repeat_avg_2025": 131.0, "repeat_share_2024": 0.021850899742930592, "repeat_share_2025": 0.028742094167252284}, {"country": "PT", "confirmed_2024": 8529.0, "confirmed_2025": 10562.0, "avg_check_2024": 120.0, "avg_check_2025": 125.0, "cpa_2024": 23.9, "cpa_2025": 27.5, "paid_2024": 0.7243999999999999, "paid_2025": 0.7048000000000001, "rent_2024": 13.5, "rent_2025": 7.4, "repeat_confirmed_2024": 1624.0, "repeat_confirmed_2025": 842.0, "repeat_avg_2024": 118.0, "repeat_avg_2025": 126.0, "repeat_share_2024": 0.19040919216789776, "repeat_share_2025": 0.07971975004733951}, {"country": "CH", "confirmed_2024": 11409.0, "confirmed_2025": 12986.0, "avg_check_2024": 164.0, "avg_check_2025": 171.0, "cpa_2024": 43.8, "cpa_2025": 48.0, "paid_2024": 0.887, "paid_2025": 0.8964, "rent_2024": 30.1, "rent_2025": 33.1, "repeat_confirmed_2024": 852.0, "repeat_confirmed_2025": 740.0, "repeat_avg_2024": 205.0, "repeat_avg_2025": 205.0, "repeat_share_2024": 0.07467788587956876, "repeat_share_2025": 0.056984444786693365}, {"country": "AT", "confirmed_2024": 19447.0, "confirmed_2025": 11544.0, "avg_check_2024": 152.0, "avg_check_2025": 148.0, "cpa_2024": 40.9, "cpa_2025": 47.5, "paid_2024": 0.8239, "paid_2025": 0.8506999999999999, "rent_2024": 22.8, "rent_2025": 19.8, "repeat_confirmed_2024": 872.0, "repeat_confirmed_2025": 608.0, "repeat_avg_2024": 162.0, "repeat_avg_2025": 181.0, "repeat_share_2024": 0.0448398210520903, "repeat_share_2025": 0.05266805266805267}, {"country": "FI", "confirmed_2024": 0.0, "confirmed_2025": 8344.0, "avg_check_2024": 0.0, "avg_check_2025": 131.0, "cpa_2024": 0.0, "cpa_2025": 38.3, "paid_2024": 0.0, "paid_2025": 0.7842, "rent_2024": 0.0, "rent_2025": 4.0, "repeat_confirmed_2024": NaN, "repeat_confirmed_2025": NaN, "repeat_avg_2024": NaN, "repeat_avg_2025": NaN, "repeat_share_2024": NaN, "repeat_share_2025": NaN}, {"country": "NL", "confirmed_2024": 0.0, "confirmed_2025": 2961.0, "avg_check_2024": 0.0, "avg_check_2025": 133.0, "cpa_2024": 0.0, "cpa_2025": 32.3, "paid_2024": 0.0, "paid_2025": 0.7119, "rent_2024": 0.0, "rent_2025": -2.7, "repeat_confirmed_2024": NaN, "repeat_confirmed_2025": NaN, "repeat_avg_2024": NaN, "repeat_avg_2025": NaN, "repeat_share_2024": NaN, "repeat_share_2025": NaN}, {"country": "IE", "confirmed_2024": 0.0, "confirmed_2025": 162.0, "avg_check_2024": 0.0, "avg_check_2025": 115.0, "cpa_2024": 0.0, "cpa_2025": 38.0, "paid_2024": 0.0, "paid_2025": 0.642, "rent_2024": 0.0, "rent_2025": -42.1, "repeat_confirmed_2024": NaN, "repeat_confirmed_2025": NaN, "repeat_avg_2024": NaN, "repeat_avg_2025": NaN, "repeat_share_2024": NaN, "repeat_share_2025": NaN}, {"country": "BE", "confirmed_2024": 0.0, "confirmed_2025": 200.0, "avg_check_2024": 0.0, "avg_check_2025": 133.0, "cpa_2024": 0.0, "cpa_2025": 36.7, "paid_2024": 0.0, "paid_2025": 0.65, "rent_2024": 0.0, "rent_2025": -3.6, "repeat_confirmed_2024": NaN, "repeat_confirmed_2025": NaN, "repeat_avg_2024": NaN, "repeat_avg_2025": NaN, "repeat_share_2024": NaN, "repeat_share_2025": NaN}];
-const KPIS = {"Total confirmed": [167633.0, 252935.0, "int"], "Paid & delivered %": [0.805353759104711, 0.7733655642754068, "pct"], "Avg check (paid) \u20ac": [133.07556253942465, 139.95294975540233, "eur1"], "CPA (weighted) \u20ac": [35.29475401621399, 37.74948267341412, "eur1"], "Rentability / confirmed (weighted) \u20ac": [18.91152756318863, 13.972870895684661, "eur1"], "Repeat confirmed": [19325.0, 17053.0, "int"], "Repeat share (repeat/main)": [0.1152815972988612, 0.06742048352343487, "pct"]};
+const rows = [{"country": "IT", "confirmed_2024": 70423.0, "confirmed_2025": 80815.0, "approve_2024": 0.2403, "approve_2025": 0.2568, "paid_2024": 0.8302, "paid_2025": 0.8141, "avg_check_2024": 128.0, "avg_check_2025": 134.0, "cpa_2024": 32.8, "cpa_2025": 38.7, "rent_2024": 22.9, "rent_2025": 13.7, "repeat_confirmed_2024": 10444.0, "repeat_confirmed_2025": 6783.0, "repeat_avg_2024": 148.0, "repeat_avg_2025": 157.0, "repeat_share_2024": 0.1483038211947801, "repeat_share_2025": 0.08393243828497185}, {"country": "FR", "confirmed_2024": 8035.0, "confirmed_2025": 51075.0, "approve_2024": 0.2034, "approve_2025": 0.239, "paid_2024": 0.6347, "paid_2025": 0.649, "avg_check_2024": 126.0, "avg_check_2025": 146.0, "cpa_2024": 28.9, "cpa_2025": 32.8, "rent_2024": 0.6, "rent_2025": 6.1, "repeat_confirmed_2024": 403.0, "repeat_confirmed_2025": 3978.0, "repeat_avg_2024": 131.0, "repeat_avg_2025": 146.0, "repeat_share_2024": 0.05015556938394524, "repeat_share_2025": 0.07788546255506608}, {"country": "DE", "confirmed_2024": 24323.0, "confirmed_2025": 43732.0, "approve_2024": 0.2563, "approve_2025": 0.2932, "paid_2024": 0.8011, "paid_2025": 0.794, "avg_check_2024": 131.0, "avg_check_2025": 142.0, "cpa_2024": 38.7, "cpa_2025": 43.9, "rent_2024": 14.9, "rent_2025": 16.8, "repeat_confirmed_2024": 1862.0, "repeat_confirmed_2025": 2024.0, "repeat_avg_2024": 151.0, "repeat_avg_2025": 163.0, "repeat_share_2024": 0.07655305677753567, "repeat_share_2025": 0.04628189883837922}, {"country": "ES", "confirmed_2024": 24689.0, "confirmed_2025": 16324.0, "approve_2024": 0.2124, "approve_2025": 0.2178, "paid_2024": 0.7712, "paid_2025": 0.772, "avg_check_2024": 125.0, "avg_check_2025": 134.0, "cpa_2024": 37.5, "cpa_2025": 26.4, "rent_2024": 10.5, "rent_2025": 21.2, "repeat_confirmed_2024": 3251.0, "repeat_confirmed_2025": 1669.0, "repeat_avg_2024": 125.0, "repeat_avg_2025": 140.0, "repeat_share_2024": 0.13167807525618697, "repeat_share_2025": 0.1022420975251164}, {"country": "SE", "confirmed_2024": 778.0, "confirmed_2025": 14230.0, "approve_2024": 0.1982, "approve_2025": 0.2502, "paid_2024": 0.7622, "paid_2025": 0.8120999999999999, "avg_check_2024": 119.0, "avg_check_2025": 135.0, "cpa_2024": 10.8, "cpa_2025": 35.4, "rent_2024": 37.4, "rent_2025": 19.7, "repeat_confirmed_2024": 17.0, "repeat_confirmed_2025": 409.0, "repeat_avg_2024": 119.0, "repeat_avg_2025": 131.0, "repeat_share_2024": 0.021850899742930592, "repeat_share_2025": 0.028742094167252284}, {"country": "PT", "confirmed_2024": 8529.0, "confirmed_2025": 10562.0, "approve_2024": 0.2022, "approve_2025": 0.2156, "paid_2024": 0.7243999999999999, "paid_2025": 0.7048000000000001, "avg_check_2024": 120.0, "avg_check_2025": 125.0, "cpa_2024": 23.9, "cpa_2025": 27.5, "rent_2024": 13.5, "rent_2025": 7.4, "repeat_confirmed_2024": 1624.0, "repeat_confirmed_2025": 842.0, "repeat_avg_2024": 118.0, "repeat_avg_2025": 126.0, "repeat_share_2024": 0.19040919216789776, "repeat_share_2025": 0.07971975004733951}, {"country": "CH", "confirmed_2024": 11409.0, "confirmed_2025": 12986.0, "approve_2024": 0.3115, "approve_2025": 0.3015, "paid_2024": 0.887, "paid_2025": 0.8964, "avg_check_2024": 164.0, "avg_check_2025": 171.0, "cpa_2024": 43.8, "cpa_2025": 48.0, "rent_2024": 30.1, "rent_2025": 33.1, "repeat_confirmed_2024": 852.0, "repeat_confirmed_2025": 740.0, "repeat_avg_2024": 205.0, "repeat_avg_2025": 205.0, "repeat_share_2024": 0.07467788587956876, "repeat_share_2025": 0.056984444786693365}, {"country": "AT", "confirmed_2024": 19447.0, "confirmed_2025": 11544.0, "approve_2024": 0.3886, "approve_2025": 0.2994, "paid_2024": 0.8239, "paid_2025": 0.8506999999999999, "avg_check_2024": 152.0, "avg_check_2025": 148.0, "cpa_2024": 40.9, "cpa_2025": 47.5, "rent_2024": 22.8, "rent_2025": 19.8, "repeat_confirmed_2024": 872.0, "repeat_confirmed_2025": 608.0, "repeat_avg_2024": 162.0, "repeat_avg_2025": 181.0, "repeat_share_2024": 0.0448398210520903, "repeat_share_2025": 0.05266805266805267}, {"country": "FI", "confirmed_2024": 0.0, "confirmed_2025": 8344.0, "approve_2024": 0.0, "approve_2025": 0.2735, "paid_2024": 0.0, "paid_2025": 0.7842, "avg_check_2024": 0.0, "avg_check_2025": 131.0, "cpa_2024": 0.0, "cpa_2025": 38.3, "rent_2024": 0.0, "rent_2025": 4.0, "repeat_confirmed_2024": NaN, "repeat_confirmed_2025": NaN, "repeat_avg_2024": NaN, "repeat_avg_2025": NaN, "repeat_share_2024": NaN, "repeat_share_2025": NaN}, {"country": "NL", "confirmed_2024": 0.0, "confirmed_2025": 2961.0, "approve_2024": 0.0, "approve_2025": 0.241, "paid_2024": 0.0, "paid_2025": 0.7119, "avg_check_2024": 0.0, "avg_check_2025": 133.0, "cpa_2024": 0.0, "cpa_2025": 32.3, "rent_2024": 0.0, "rent_2025": -2.7, "repeat_confirmed_2024": NaN, "repeat_confirmed_2025": NaN, "repeat_avg_2024": NaN, "repeat_avg_2025": NaN, "repeat_share_2024": NaN, "repeat_share_2025": NaN}, {"country": "IE", "confirmed_2024": 0.0, "confirmed_2025": 162.0, "approve_2024": 0.0, "approve_2025": 0.1612, "paid_2024": 0.0, "paid_2025": 0.642, "avg_check_2024": 0.0, "avg_check_2025": 115.0, "cpa_2024": 0.0, "cpa_2025": 38.0, "rent_2024": 0.0, "rent_2025": -42.1, "repeat_confirmed_2024": NaN, "repeat_confirmed_2025": NaN, "repeat_avg_2024": NaN, "repeat_avg_2025": NaN, "repeat_share_2024": NaN, "repeat_share_2025": NaN}, {"country": "BE", "confirmed_2024": 0.0, "confirmed_2025": 200.0, "approve_2024": 0.0, "approve_2025": 0.2886, "paid_2024": 0.0, "paid_2025": 0.65, "avg_check_2024": 0.0, "avg_check_2025": 133.0, "cpa_2024": 0.0, "cpa_2025": 36.7, "rent_2024": 0.0, "rent_2025": -3.6, "repeat_confirmed_2024": NaN, "repeat_confirmed_2025": NaN, "repeat_avg_2024": NaN, "repeat_avg_2025": NaN, "repeat_share_2024": NaN, "repeat_share_2025": NaN}];
+const KPIS = {"Total confirmed": [167633.0, 252935.0, "int"], "Approve rate (weighted)": [0.2566598790214337, 0.2594595125229802, "pct"], "Paid & delivered %": [0.805353759104711, 0.7733655642754068, "pct"], "Avg check (paid) \u20ac": [133.07556253942465, 139.95294975540233, "eur1"], "CPA (weighted) \u20ac": [35.29475401621399, 37.74948267341412, "eur1"], "Rentability / confirmed (weighted) \u20ac": [18.91152756318863, 13.972870895684661, "eur1"], "Repeat confirmed": [19325.0, 17053.0, "int"], "Repeat avg check \u20ac": [144.66344113842175, 154.26669794171113, "eur1"], "Repeat share (repeat/main)": [0.1152815972988612, 0.06742048352343487, "pct"]};
 
 function fmt(v, kind){
   if(v === null || v === undefined || Number.isNaN(v)) return "—";
@@ -195,7 +205,13 @@ function plotAll(){
     {x:countries, y:rows.map(r=>r.confirmed_2025), name:"2025", type:"bar"}
   ], Object.assign(baseLayout("Confirmed orders by country"), {barmode:"group"}), {displayModeBar:false});
 
-  // Avg check
+  // Approve by country
+  Plotly.newPlot("approve", [
+    {x:countries, y:rows.map(r=>r.approve_2024), name:"2024", type:"bar"},
+    {x:countries, y:rows.map(r=>r.approve_2025), name:"2025", type:"bar"}
+  ], Object.assign(baseLayout("Approve rate by country"), {barmode:"group", yaxis:{tickformat:".1%"}}), {displayModeBar:false});
+
+  // Avg check main
   Plotly.newPlot("avgcheck", [
     {x:countries, y:rows.map(r=>r.avg_check_2024), name:"2024", type:"bar"},
     {x:countries, y:rows.map(r=>r.avg_check_2025), name:"2025", type:"bar"}
@@ -225,6 +241,12 @@ function plotAll(){
     {x:countries, y:rows.map(r=>r.repeat_confirmed_2025), name:"2025", type:"bar"}
   ], Object.assign(baseLayout("Repeat confirmed orders"), {barmode:"group"}), {displayModeBar:false});
 
+  // Repeat avg
+  Plotly.newPlot("repeatAvg", [
+    {x:countries, y:rows.map(r=>r.repeat_avg_2024), name:"2024", type:"bar"},
+    {x:countries, y:rows.map(r=>r.repeat_avg_2025), name:"2025", type:"bar"}
+  ], Object.assign(baseLayout("Repeat average check"), {barmode:"group"}), {displayModeBar:false});
+
   // Repeat share
   Plotly.newPlot("repeatShare", [
     {x:countries, y:rows.map(r=>r.repeat_share_2024), name:"2024", type:"bar"},
@@ -235,20 +257,19 @@ function plotAll(){
 renderCards();
 plotAll();
 
-// create a few subtle snowflakes
+// subtle snowflakes
 (function(){
-  const flakes = 12; // just a little ✨
+  const flakes = 10; // just a little ✨
   for(let i=0;i<flakes;i++){
     const f = document.createElement("div");
     f.className = "snowflake";
     f.innerText = "❄";
     f.style.left = Math.random()*100 + "vw";
-    f.style.animationDuration = (12 + Math.random()*10) + "s";
+    f.style.animationDuration = (14 + Math.random()*10) + "s";
     f.style.fontSize = (10 + Math.random()*8) + "px";
     document.body.appendChild(f);
   }
 })();
-
 </script>
 </body>
 </html>
